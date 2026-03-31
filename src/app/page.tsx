@@ -1,119 +1,14 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
 import { Menu, X, Cpu, Zap, Shield, ChevronRight, Award, Box, ZapOff } from 'lucide-react';
+import VideoPlayer from '@/lib/VideoPlayer';
+import NavBar from '@/lib/NavBar';
+import SponsorSection from '@/lib/SponsorSection';
 
 export default function Home() {
-  const [activeSection, setActiveSection] = useState('hero');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const matchVideos = [
-    'BceDgHKz4ss', // Qual 18 - Niagara (Great scoring run)
-    'bhlG-D6SnNY', // Qual 2 - Niagara (Solid defense)
-  ];
-  const [playlist, setPlaylist] = useState('');
-
-  useEffect(() => {
-    // Shuffle the array
-    const shuffled = [...matchVideos].sort(() => Math.random() - 0.5);
-    // Join them into a comma-separated string for the YouTube API
-    setPlaylist(shuffled.join(','));
-  }, []);
-
-  // Scroll Spy Logic
-  useEffect(() => {
-    const handleScroll = () => {
-      // Make sure these IDs exactly match your <section id="..."> tags
-      const sections = ['about', 'legacy', 'sponsor', 'first'];
-
-      // We increase the offset (150) to trigger the change a bit earlier
-      const scrollPosition = window.scrollY + 150;
-
-      sections.forEach((sectionId) => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          const offsetTop = element.offsetTop;
-          const offsetHeight = element.offsetHeight;
-
-          // If our scroll position is within the bounds of this section
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(sectionId);
-          }
-        }
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const navLinks = [
-    { name: 'What is FIRST', id: 'first' },
-    { name: 'About', id: 'about' },
-    { name: 'History', id: 'legacy' },
-    { name: 'Sponsors', id: 'sponsor' },
-  ];
 
   return (
     <main className="min-h-screen selection:bg-blue-100">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-
-          {/* Logo / Brand */}
-          <div className="font-black text-xl tracking-tighter text-slate-900">
-            CK<span className="text-blue-600">CYBERPACK</span>
-          </div>
-
-          {/* Desktop Links */}
-          <div className="hidden md:flex gap-8 items-center">
-            {navLinks.map((link) => (
-              <a
-                key={link.id}
-                href={`#${link.id}`}
-                className={`text-sm font-bold transition-colors ${activeSection === link.id ? 'text-blue-600' : 'text-slate-500 hover:text-slate-900'
-                  }`}
-              >
-                {link.name}
-              </a>
-            ))}
-            <a href="#sponsor" className="bg-slate-900 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition-all">
-              Sponsor Us
-            </a>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden p-2 text-slate-900"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
-        </div>
-
-        {/* Mobile Dropdown Menu */}
-        <div className={`md:hidden absolute w-full bg-white border-b border-slate-100 transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-96 opacity-100 py-6' : 'max-h-0 opacity-0 overflow-hidden'
-          }`}>
-          <div className="flex flex-col gap-4 px-6">
-            {navLinks.map((link) => (
-              <a
-                key={link.id}
-                href={`#${link.id}`}
-                onClick={() => setIsMenuOpen(false)}
-                className={`text-lg font-bold ${activeSection === link.id ? 'text-blue-600' : 'text-slate-600'
-                  }`}
-              >
-                {link.name}
-              </a>
-            ))}
-            <a
-              href="mailto:ckcyberpack@gmail.com"
-              className="mt-2 bg-blue-600 text-white text-center py-4 rounded-xl font-bold"
-            >
-              Contact Team
-            </a>
-          </div>
-        </div>
-      </nav>
+      <NavBar />
 
       {/* Hero Section */}
       <section className="pt-24 pb-20 px-6">
@@ -218,18 +113,7 @@ export default function Home() {
 
             {/* Right: Autoplay Video Carousel */}
             <div className="relative order-1 lg:order-2">
-              <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl bg-slate-900 aspect-video">
-                {/* The dynamic playlist embed */}
-                {playlist && (
-                  <iframe
-                    className="w-full h-full"
-                    src={`https://www.youtube.com/embed/${playlist.split(',')[0]}?autoplay=1&mute=1&loop=1&playlist=${playlist}&controls=0&modestbranding=1&rel=0`}
-                    title="CK Cyber Pack Action"
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
-                  ></iframe>
-                )}
-              </div>
+              <VideoPlayer />
 
               {/* Engineering Aesthetic Accents */}
               <div className="absolute -top-6 -right-6 w-32 h-32 border-t-2 border-r-2 border-blue-200 -z-10"></div>
@@ -460,10 +344,6 @@ export default function Home() {
                   src="/team-roster.jpg"
                   alt="CK Cyber Pack Team"
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    // This shows a placeholder if the image isn't found yet
-                    e.currentTarget.src = "https://placehold.co/800x600/0f172a/white?text=Drop+Team+Photo+Here";
-                  }}
                 />
               </div>
 
@@ -479,6 +359,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Current Sponsors */}
+      <SponsorSection></SponsorSection>
 
       {/* Sponsorship Tiers Section */}
       <section id="sponsor" className="py-24 px-6 bg-white border-t border-slate-200">
